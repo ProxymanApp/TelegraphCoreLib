@@ -78,4 +78,28 @@ public extension HTTPMessage {
         head.append(body)
         return head
     }
+
+    func httpMessageDataForBreakpoint() -> Data {
+        var head = Data()
+
+        // Write the first line
+        head.append(firstLine.utf8Data)
+        head.append(.crlf)
+
+        // Remove the content-length because the user can edit the Body of the HTTP Message
+        headers.contentLength = nil
+
+        // Write the headers
+        headers.orderHeaders.forEach { key, value in
+            head.append("\(key): \(value)".utf8Data)
+            head.append(.crlf)
+        }
+
+        // Signal the end of the headers with another crlf
+        head.append(.crlf)
+
+        // Start body
+        head.append(body)
+        return head
+    }
 }
